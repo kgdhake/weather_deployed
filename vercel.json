@@ -1,7 +1,8 @@
 {
-  "buildCommand": "cd react && npm install && npm run build",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
   "outputDirectory": "react/dist",
-  "framework": "vite",
   "rewrites": [
     {
       "source": "/api/(.*)",

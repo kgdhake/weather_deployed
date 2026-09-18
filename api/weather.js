@@ -21,7 +21,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed. Only GET is supported." });
   }
 
-  const { lat, lon } = req.query;
+  const query = req.query || Object.fromEntries(new URL(req.url, `http://${req.headers?.host || 'localhost'}`).searchParams);
+  const { lat, lon } = query;
 
   if (lat === undefined || lon === undefined || lat === null || lon === null) {
     return res.status(400).json({ error: "Latitude and longitude are required query parameters" });
