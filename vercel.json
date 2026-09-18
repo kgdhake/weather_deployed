@@ -2,14 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "react/dist",
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|api/).*)",
       "destination": "/index.html"
     }
   ]
