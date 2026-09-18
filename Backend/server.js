@@ -18,18 +18,18 @@ app.use(helmet());
 // Restrict CORS origins
 const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(",").map(url => url.trim())
-  : ["http://localhost:5173", "http://localhost:3000"];
+  : ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173", "http://127.0.0.1:3000"];
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl) or if origin is in whitelist
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Blocked by CORS policy"));
     }
   },
-  methods: ["GET"],
+  methods: ["GET", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
@@ -56,6 +56,9 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
+  if (err.message === "Blocked by CORS policy") {
+    return res.status(403).json({ error: "Blocked by CORS policy" });
+  }
   console.error("Unhandled Server Error:", err.message);
   res.status(500).json({ error: "Internal server error" });
 });

@@ -1,7 +1,12 @@
 export default async function handler(req, res) {
   // CORS headers
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -12,12 +17,11 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { lat, lon } = req.query;
-  const apiKey = process.env.WEATHER_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({ error: "WEATHER_API_KEY not configured on Vercel" });
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed. Only GET is supported." });
   }
+
+  const { lat, lon } = req.query;
 
   if (lat === undefined || lon === undefined || lat === null || lon === null) {
     return res.status(400).json({ error: "Latitude and longitude are required query parameters" });
@@ -39,6 +43,12 @@ export default async function handler(req, res) {
     });
   }
 
+  const apiKey = process.env.WEATHER_API_KEY;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: "WEATHER_API_KEY not configured on Vercel" });
+  }
+
   try {
     const params = new URLSearchParams({
       lat: String(latitude),
@@ -58,8 +68,11 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       console.error("OpenWeather API error response:", data);
+      const errorMessage = data?.message
+        ? `OpenWeather error: ${data.message}`
+        : "Failed to retrieve weather data from provider.";
       return res.status(response.status).json({
-        error: "Failed to retrieve weather data from provider."
+        error: errorMessage
       });
     }
 

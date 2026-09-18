@@ -5,11 +5,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   const { lat, lon } = req.query;
-  const apiKey = process.env.WEATHER_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({ error: "Weather API key not configured on server" });
-  }
 
   if (lat === undefined || lon === undefined || lat === null || lon === null) {
     return res.status(400).json({ error: "Latitude and longitude are required query parameters" });
@@ -32,6 +27,12 @@ router.get("/", async (req, res) => {
     });
   }
 
+  const apiKey = process.env.WEATHER_API_KEY;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: "Weather API key not configured on server" });
+  }
+
   try {
     const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
       params: {
@@ -52,8 +53,12 @@ router.get("/", async (req, res) => {
       ? error.response.status
       : 502;
 
+    const errorMessage = error.response?.data?.message
+      ? `OpenWeather error: ${error.response.data.message}`
+      : "Failed to retrieve weather data from provider. Please try again later.";
+
     res.status(clientStatus).json({
-      error: "Failed to retrieve weather data from provider. Please try again later."
+      error: errorMessage
     });
   }
 });

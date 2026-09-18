@@ -2,9 +2,19 @@
   "name": "weather-app",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "workspaces": [
+    "react",
+    "Backend"
+  ],
   "scripts": {
-    "build": "cd react && npm install && npm run build",
-    "dev": "cd react && npm run dev",
-    "start": "cd Backend && npm start"
+    "build": "npm --prefix react run build",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"cyan,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "npm --prefix react run dev",
+    "dev:backend": "npm --prefix Backend run dev",
+    "start": "npm --prefix Backend start"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }
