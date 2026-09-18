@@ -34,24 +34,23 @@ function App() {
       style: {
         version: 8,
         sources: {
-          "carto-dark": {
+          "osm": {
             type: "raster",
             tiles: [
-              "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-              "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-              "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-              "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+              "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
             ],
             tileSize: 256,
             attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           },
         },
         layers: [
           {
-            id: "carto-dark-layer",
+            id: "osm-layer",
             type: "raster",
-            source: "carto-dark",
+            source: "osm",
             minzoom: 0,
             maxzoom: 19,
           },
@@ -152,10 +151,13 @@ function App() {
         </div>
       </div>
 
-      {/* Map Canvas */}
+      {/* Map Canvas — CSS filter makes OSM tiles render dark without needing a paid tile API */}
       <div 
         ref={mapContainerRef} 
-        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }} 
+        style={{
+          position: "absolute", top: 0, left: 0, width: "100%", height: "100%",
+          filter: "invert(1) hue-rotate(180deg) brightness(0.85) saturate(0.6)",
+        }} 
       />
 
       {/* Responsive Glassmorphism Weather Card */}
