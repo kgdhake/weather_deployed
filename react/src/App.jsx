@@ -98,7 +98,15 @@ function App() {
       }
     });
 
+    const handleResize = () => {
+      if (mapRef.current) {
+        mapRef.current.resize();
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
       if (markerRef.current) {
         markerRef.current.remove();
         markerRef.current = null;
@@ -120,7 +128,10 @@ function App() {
       </div>
 
       {/* Map Canvas */}
-      <div ref={mapContainerRef} style={{ height: "100vh", width: "100vw" }} />
+      <div 
+        ref={mapContainerRef} 
+        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }} 
+      />
 
       {/* Responsive Glassmorphism Weather Card */}
       <WeatherPopup
